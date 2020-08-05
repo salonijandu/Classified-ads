@@ -1,5 +1,17 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+ h1 Advertisements List
+ table.table
+   thead
+     tr
+       th Title
+       th Price
+       th View
+     each ad in ads
+       tbody
+         tr
+           td=ad.Title
+           td="$"+ad.Price
+           td  
+              a(href="/ads/view/"+ad._id) View

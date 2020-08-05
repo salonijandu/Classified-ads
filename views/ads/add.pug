@@ -1,0 +1,15 @@
+extends ../layout
+block content
+  .container
+    h2 New Advertisement
+    form(action='/ads/add' method="post")
+      .form-group
+        label(for='Title') Title:
+        input#Title.form-control(type='text' placeholder='Enter Advertisement Title' name='Title')
+      .form-group
+        label(for='Description') Description:
+        input#Description.form-control(type='text' placeholder='Enter Advertisement Description' name='Description')
+      .form-group
+        label(for='Price') Price:
+        input#Price.form-control(type='Number' placeholder='Enter Price' name='Price')
+      button.btn.btn-default(type='submit') Create

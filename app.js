@@ -2,12 +2,46 @@ var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
+var cookieSession = require("cookie-session");
 var logger = require('morgan');
+var bodyParser = require("body-parser");
+var mongoose = require("mongoose");
+var passport = require("passport");
+require('dotenv').config()
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var addsRouter = require('./routes/adds');
 
 var app = express();
+
+require("./models/User");
+require("./models/Advertisement");
+require("./routes/passport");
+
+const Advertisement = require("./models/Advertisement");
+
+mongoose.connect(process.env.mongoURI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  }).then(() => console.log("Success")).catch(err => console.log(err));
+
+
+app.use(bodyParser.json());
+app.use(
+  bodyParser.urlencoded({
+    extended: false
+  })
+);
+app.use(
+  cookieSession({
+    maxAge: 30 * 24 * 60 * 60 * 1000,
+    keys: [process.env.cookieKey]
+  })
+);
+app.use(passport.initialize());
+app.use(passport.session());
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -19,8 +53,35 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use((req, res, next) => {
+  res.locals.login = req.isAuthenticated();
+  res.locals.session = req.session;
+  next();
+});
+
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/ads', addsRouter);
+
+
+
+app.get("/advertisement/getJsonData", async (req, res) => {
+  try {
+    const ad = await Advertisement.find({});
+    if (!ad)
+      res.send({
+        message: "Error Finding Ads"
+      });
+    res.send({
+      ad
+    });
+  } catch (err) {
+    res.render({
+      ad: "Error Finding Ads"
+    });
+  }
+});
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

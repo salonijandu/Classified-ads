@@ -1,0 +1,11 @@
+extends ../layout
+block content
+  .panel.panel-default
+    .panel-body(style="font-weight: bold; text-align: center")=ad.Title
+    .panel-body(style="text-align: center")=ad.Description
+    .panel-body(style="font-weight: bold; text-align: center")="$"+ad.Price
+    if login
+      .panel-footer(style="font-weight: bold; text-align: center")
+        a(href="/ads/edit/"+ad._id) Edit
+      .panel-footer(style="font-weight: bold; text-align: center")
+        a(href="/ads/delete/"+ad._id) Remove
